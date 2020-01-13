@@ -1,20 +1,47 @@
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
+#include <iostream>
+#include "country.h"
 
-int main(int argc, char *argv[])
+static const size_t MAX_COUNTRY = 3;
+
+int main()
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    Country m_country[MAX_COUNTRY];
+    std::string l_Name;
+    int l_Area;
+    int l_People;
 
-    QGuiApplication app(argc, argv);
+    float l_maxAreaPeople;
+    size_t l_maxAreaPeopleIndex = 0;
+    for(size_t i = 0; i < MAX_COUNTRY; i++) {
+        std::cout << "Input name: ";
+        std::cin >> l_Name;
+        m_country[i].setName(l_Name);
+        std::cout << "Input area: ";
+        std::cin >> l_Area;
+        m_country[i].setArea(l_Area);
+        std::cout << "Input people: ";
+        std::cin >> l_People;
+        m_country[i].setPeople(l_People);
+    }
 
-    QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
-    }, Qt::QueuedConnection);
-    engine.load(url);
+    float l_AreaPeople[MAX_COUNTRY];
 
-    return app.exec();
+    for(size_t i = 0; i < MAX_COUNTRY; i++) {
+        l_AreaPeople[i] = (float)m_country[i].getArea() / (float)m_country[i].getPeople();
+    }
+
+    l_maxAreaPeople = l_AreaPeople[0];
+
+    for(size_t i = 0; i < MAX_COUNTRY; i++) {
+        if(l_maxAreaPeople < l_AreaPeople[i]) {
+            l_maxAreaPeople = l_AreaPeople[i];
+            l_maxAreaPeopleIndex = i;
+        }
+    }
+
+    m_country[l_maxAreaPeopleIndex].PrintData();
+    std::cout << l_AreaPeople[l_maxAreaPeopleIndex] << std::endl;
+
+    system("pause");
+    return 0;
 }
